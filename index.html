@@ -1,0 +1,87 @@
+<html>
+
+<head>
+    <title>JS Challenger</title>
+    
+    <script type="text/javascript" src="public/js/require.js"></script>
+    <script type="text/javascript" src="public/js/jquery.min.js"></script>
+    
+    <link rel="stylesheet" href="public/css/style.css" />
+</head>
+    
+<body>
+    <div class="container">
+        <div class="row">
+            <h1>JS Challenger, Emily</h1>
+            <div class="col-sm-12">
+                <div class="col-sm-4">
+                    <h2>Code entry</h2>
+                    <p>Enter your code in the text area to the right.</p>
+                </div>
+                <div class="col-sm-8">
+                    <textarea name="codeentry" rows="10" cols="60"></textarea>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <button id="go-acorn" class="btn btn-large btn-danger col-xs-offset-4">Go Acorn</button>
+                <div id="acorn-result" class="col-xs-12" style="height: 300px; border: 1px red solid;"></div>
+            </div>
+            <div class="col-sm-6">
+                <button id="go-esprima" class="btn btn-large btn-primary col-xs-offset-4">Go Esprima</button>
+                <div id="esprima-result" class="col-xs-12" style="height: 300px; border: 1px blue solid;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        requirejs.config({
+            baseUrl: 'public'
+        });
+        
+        require(
+            [
+                'js/acorn',
+                'js/esprima'
+            ],
+            function (Acorn, Esprima) {
+                var scriptString = 'function abc () {\n'
+                                    + '    var number = 42;\n'
+                                    + '    return number < 45;\n'
+                                    + '}';
+                $('textarea').val(scriptString);
+        
+                $('#go-acorn').click(function () {
+                    var js = $('textarea').val();
+                    var start = Date.now();
+                    var result;
+                    try {
+                        result = JSON.stringify(Acorn.parse(js));
+                    } catch (e) {
+                        console.log(e.message);
+                        result = '<div class="alert alert-warning">' + e.message + '</div>';
+                    }
+                    var end = Date.now() - start;
+                    console.log(end, result);
+                    $('#acorn-result').html(result);
+                });
+                
+                $('#go-esprima').click(function () {
+                    var js = $('textarea').val();
+                    var start = Date.now();
+                    var result;
+                    try {
+                        result = JSON.stringify(Esprima.parse(js));
+                    } catch (e) {
+                        console.log(e.message);
+                        result = '<div class="alert alert-warning">' + e.message + '</div>';
+                    }
+                    var end = Date.now() - start;
+                    console.log(end, result);
+                    $('#esprima-result').html(result);
+                });
+            }
+        );
+    </script>
+</body>
+
+</html>
