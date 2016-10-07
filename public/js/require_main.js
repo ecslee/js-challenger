@@ -73,29 +73,40 @@ require(
                         node.body.forEach(function (subnode, i) {
                             types = types.concat(getJSNodeTypes(subnode));
                         });
-                    } else if (node.body) {
+                    } else if (node.body && node.body.type) {
                         types = types.concat(getJSNodeTypes(node.body));
                     }
                     return types;
                 }
                 
+                var checkInterval = setInterval(checkJS, 1000);
                 $('#go-acorn').click(function () {
+                    clearInterval(checkInterval);
+                    checkJS();
+                    checkInterval = setInterval(checkJS, 1000);
+                });
+                    
+                function checkJS() {
+                    console.log('GO! check js');
                     $.ajax({
                         url: '/acorn',
                         data: {
                             js: $('textarea').val()
                         },
                         success: function (data, success, jqxhr) {
-                            $('#used .result').empty();
-                            $('#quals .result [data-qual]').css('color', '');
+                            
                             
                             data = JSON.parse(data);
                             jsNodeSummary = {};
                             getJSNodeTypes(data.nodes);
                             
                             if (data.err) {
-                                $('#used .result').html('<div class="alert alert-warning">' + data.err + '</div>');
+                                console.log('error: ' + data.err);
+                                //$('#used .result').html('<div class="alert alert-warning">' + data.err + '</div>');
                             } else {
+                                $('#used .result').empty();
+                                $('#quals .result [data-qual]').css('color', '');
+                                
                                 for (var key in jsNodeSummary) {
                                     $('#used .result').append('<p>' + key + ' x ' + jsNodeSummary[key] + '</p>');
                                     
@@ -113,7 +124,7 @@ require(
                             $('#used-result').html(errorMsg);
                         }
                     });
-                });
+                }
             }
         );
     }
