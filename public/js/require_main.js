@@ -18,23 +18,41 @@ require(
         console.log('ready to go!');
 
         require(
-            [
-                
-            ],
+            [],
             function () {
-                $('textarea').val('function abc() {\n'
-                                    + '  var number = 42;\n'
-                                    + '  for (var i = 0; i < 3; i++) {\n'
-                                    + '    number++;\n'
-                                    + '  }\n'
-                                    + '  return number === 45;\n'
-                                    + '}'
-                                 );
+                var simple = 'function abc() {\n'
+                        + '  var number = 42;\n'
+                        + '  for (var i = 0; i < 3; i++) {\n'
+                        + '    number++;\n'
+                        + '  }\n'
+                        + '  return number === 45;\n'
+                        + '}';
+                var complex = 'function abc() {\n'
+                        + '  var number = 42;\n'
+                        + '  for (var i = 0; i < 3; i++) {\n'
+                        + '    number++;\n'
+                        + '    if (number == 45) {\n'
+                        + '      number = 44;\n'
+                        + '    }\n'
+                        + '  }\n'
+                        + '  for (var i = 0; i < 3; i++) {\n'
+                        + '    number++;\n'
+                        + '  }\n'
+                        + '  for (var i = 0; i < 3; i++) {\n'
+                        + '    number++;\n'
+                        + '    if (number == 45) {\n'
+                        + '      number = 44;\n'
+                        + '    }\n'
+                        + '  }\n'
+                        + '  return number === 45;\n'
+                        + '}\n'
+                
+                $('textarea').val(simple);
                 
                 var quals = {
                     whitelist: ['ForStatement', 'VariableDeclaration'],
                     blacklist: ['WhileStatement', 'IfStatement'],
-                    structure: []
+                    structure: ['ForStatement', 'IfStatement']
                 };
                 
                 function initQualifications() {
@@ -56,7 +74,7 @@ require(
                     $('#quals .result .structure').empty();
                     $('#quals .result .structure').append('<h3>Structure</h3>');
                     for (var s = 0; s < quals.structure.length; s++) {
-                        $('#quals .result .structure').append('<p data-qual="' + quals.structure[s] + '">' + quals.structure[s] + '</p>');
+                        $('#quals .result .structure').append('<p data-qual="' + quals.structure[s] + '">' + (s > 0 ? '  > ' : '') + quals.structure[s] + '</p>');
                     }
                 }
                 initQualifications();
@@ -80,6 +98,44 @@ require(
                     }
                     
                     return jsNodeSummary;
+                }
+            
+                function checkStructure(structure, nodes) {
+                    function findNode(type, node) {
+                        var result = [];
+                        if (node.type === type) {
+                            return [node];
+                        }
+
+                        for (var key in node) {
+                            if (node[key] && node[key].type) {
+                                result = result.concat(findNode(type, node[key]));
+                            } else if (node[key] && typeof node[key] === 'object' && node[key].length) {
+                                node[key].forEach(function (subnode, i) {
+                                    if (subnode.type) {
+                                        result = result.concat(findNode(type, subnode));
+                                    }
+                                });
+                            }
+                        }
+                        return result;
+                    }
+
+                    var result = [];
+                    var nodeMatches = nodes;
+                    for (var i = 0; i < structure.length; i++) {
+                        if (nodeMatches.length > 0 || typeof nodeMatches.type != 'undefined') {
+                            if (typeof nodeMatches.type == 'undefined') {
+                                nodeMatches = {
+                                    type: 'nodeMatchWrapper',
+                                    body: nodeMatches
+                                };
+                            }
+                            nodeMatches = findNode(structure[i], nodeMatches);
+                        }
+                    }
+                    
+                    return nodeMatches.length > 0;
                 }
                 
                 var checkInterval = setInterval(checkJS, 1000);
@@ -130,6 +186,11 @@ require(
                                     if (quals.blacklist.indexOf(key) > -1) {
                                         $('#quals .result .blacklist [data-qual="' + key + '"]').css('color', 'red');
                                     }
+                                }
+                                
+                                var structureMatch = checkStructure(quals.structure, data.nodes);
+                                if (structureMatch) {
+                                    $('#quals .result .structure [data-qual]').css('color', 'lightgreen');
                                 }
                             }
                         },
