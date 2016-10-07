@@ -3,10 +3,67 @@
 
 /* JS CHALLENGER  */
 
-body {
+#header {
+    margin-top: 20px;
+    margin-bottom: 50px;
+    
+    h1 {
+        font-size: 30px;
+        text-align: right;
+        margin-top: 0px;
+    }
+    
+}
 
+#code-area, #quals {
+    h2 {
+        margin-top: 0px;
+        font-size: 24px;
+    }
+    
+    h3 {
+        font-size: 20px;
+    }
+}
+
+#quals {
+    margin-bottom: 50px;
+    
+    .list {
+        height: 300px;
+        border: 1px solid #46b8da;
+        border-radius: 4px;
+        overflow: auto;
+    }
+    
+    .entries {
+        margin-left: 30px;
+    }
+    
+    .glyphicon {
+        visibility: hidden;
+        margin-right: 10px;
+    }
+    
+    p.match, h3.match {
+        .glyphicon {
+            visibility: visible;
+        }
+    }
+    
+    .glyphicon-ok-circle, .glyphicon-thumbs-up {
+        color: #449d44;
+    }
+    
+    .glyphicon-ban-circle, .glyphicon-thumbs-down {
+        color: #eea236;
+    }
 }
 
 textarea {
+    height: 300px;
+    width: 100%;
+    border: 1px solid #46b8da;
+    border-radius: 4px;
     font-family: Consolas, "Liberation Mono", Courier, monospace;
 }

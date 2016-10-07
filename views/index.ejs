@@ -1,26 +1,39 @@
 <% include header %>
 <div class="container">
     <div class="row">
-        <h1>JS Challenger, <%= name %></h1>
-        <div class="col-sm-12">
-            <div class="col-sm-4">
-                <h2>Code entry</h2>
-                <p>Enter your code in the text area to the right.</p>
-                <button id="go-acorn" class="btn btn-large btn-danger col-xs-offset-4">Check now</button>
-            </div>
-            <div class="col-sm-8">
-                <textarea name="codeentry" rows="10" cols="60"></textarea>
-            </div>
-        </div>
-        <div id="quals" class="col-sm-6">
-            <h2>Qualifications</h2>
-            <div class="result col-xs-12" style="height: 300px; border: 1px red solid;">
-                <div class="whitelist"></div>
-                <div class="blacklist"></div>
-                <div class="structure"></div>
+        <div id="header" class="col-xs-12">
+            <h1 class="col-xs-12 col-sm-4 col-sm-offset-1 col-md-3 col-md-offset-2">Javascript Challenge Framework</h1>
+            <div class="col-xs-12 col-sm-6">
+                <p>Enter your code in the text area below.</p>
+                <p>
+                    As you update your code, it will be analyzed periodically to see if it meets requirements.
+                    These requirements are listed to the left of your code.
+                </p>
             </div>
         </div>
-        <% include acorn-result %>
+    </div>
+    <div class="row">
+        <div id="quals" class="col-xs-12 col-sm-5 col-sm-offset col-md-4 col-md-offset-1">
+            <h2>Requirements <button id="go-acorn" title="Check requirements now" class="btn btn-large btn-info pull-right">Check now</button></h2>
+            <div class="list col-xs-12">
+                <div class="whitelist">
+                    <h3><i class="glyphicon glyphicon-thumbs-up"></i>Whitelist</h3>
+                    <div class="entries"></div>
+                </div>
+                <div class="blacklist">
+                    <h3><i class="glyphicon glyphicon-thumbs-up"></i>Blacklist</h3>
+                    <div class="entries"></div>
+                </div>
+                <div class="structure">
+                    <h3><i class="glyphicon glyphicon-thumbs-up"></i>Structure</h3>
+                    <div class="entries"></div>
+                </div>
+            </div>
+        </div>
+        <div id="code-area" class="col-xs-12 col-sm-7 col-md-6">
+            <h2>Code area <button id="switch-code" title="Switch to pre-entered code" class="btn btn-large btn-info pull-right">Switch code</button></h2>
+            <textarea name="codeentry"></textarea>
+        </div>
     </div>
 </div>
 <% include footer %>

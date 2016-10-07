@@ -2572,4 +2572,18 @@ button.close { -webkit-appearance: none; padding: 0; cursor: pointer; background
 @media print { .hidden-print { display: none !important; } }
 /*# sourceMappingURL=bootstrap.css.map */
 /* JS CHALLENGER  */
-textarea { font-family: Consolas, "Liberation Mono", Courier, monospace; }
+#header { margin-top: 20px; margin-bottom: 50px; }
+#header h1 { font-size: 30px; text-align: right; margin-top: 0px; }
+
+#code-area h2, #quals h2 { margin-top: 0px; font-size: 24px; }
+#code-area h3, #quals h3 { font-size: 20px; }
+
+#quals { margin-bottom: 50px; }
+#quals .list { height: 300px; border: 1px solid #46b8da; border-radius: 4px; overflow: auto; }
+#quals .entries { margin-left: 30px; }
+#quals .glyphicon { visibility: hidden; margin-right: 10px; }
+#quals p.match .glyphicon, #quals h3.match .glyphicon { visibility: visible; }
+#quals .glyphicon-ok-circle, #quals .glyphicon-thumbs-up { color: #449d44; }
+#quals .glyphicon-ban-circle, #quals .glyphicon-thumbs-down { color: #eea236; }
+
+textarea { height: 300px; width: 100%; border: 1px solid #46b8da; border-radius: 4px; font-family: Consolas, "Liberation Mono", Courier, monospace; }

@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var Acorn = require('acorn');
 
+// accept accorn requests and responds with error or object
 router.get('/', function (req, res, next) {
     var result = {
         nodes: {},
