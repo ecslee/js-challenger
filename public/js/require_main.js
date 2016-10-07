@@ -61,49 +61,62 @@ require(
                 }
                 initQualifications();
                 
-                var jsNodeSummary;
-                function getJSNodeTypes(node) {
-                    var types = [node.type];
+                function getJSNodeTypes(jsNodeSummary, node) {
                     if (jsNodeSummary[node.type] == undefined) {
                         jsNodeSummary[node.type] = 0;
                     }
                     jsNodeSummary[node.type]++;
-
-                    if (node.body && node.body.length) {
-                        node.body.forEach(function (subnode, i) {
-                            types = types.concat(getJSNodeTypes(subnode));
-                        });
-                    } else if (node.body && node.body.type) {
-                        types = types.concat(getJSNodeTypes(node.body));
+                    
+                    for (var key in node) {
+                        if (node[key] && node[key].type) {
+                            getJSNodeTypes(jsNodeSummary, node[key]);
+                        } else if (node[key] && typeof node[key] === 'object' && node[key].length) {
+                            node[key].forEach(function (subnode, i) {
+                                if (subnode.type) {
+                                    getJSNodeTypes(jsNodeSummary, subnode);
+                                }
+                            });
+                        }
                     }
-                    return types;
+                    
+                    return jsNodeSummary;
                 }
                 
                 var checkInterval = setInterval(checkJS, 1000);
                 $('#go-acorn').click(function () {
+                    /**
+                     * When clicking the button to check instantly,
+                     * clear the interval to avoid any crossed checks.
+                     */
+                    
                     clearInterval(checkInterval);
                     checkJS();
                     checkInterval = setInterval(checkJS, 1000);
                 });
                     
                 function checkJS() {
-                    console.log('GO! check js');
                     $.ajax({
                         url: '/acorn',
                         data: {
                             js: $('textarea').val()
                         },
                         success: function (data, success, jqxhr) {
-                            
-                            
                             data = JSON.parse(data);
-                            jsNodeSummary = {};
-                            getJSNodeTypes(data.nodes);
                             
                             if (data.err) {
+                                /**
+                                 * Don't immediately display an error.
+                                 * Since code is parsed periodically, it could be half-typed.
+                                 */
                                 console.log('error: ' + data.err);
-                                //$('#used .result').html('<div class="alert alert-warning">' + data.err + '</div>');
                             } else {
+                                /**
+                                 * If no error, clear the old results and update info.
+                                 * Check the qualifications and update quals panel.
+                                 */
+                                
+                                var jsNodeSummary = getJSNodeTypes({}, data.nodes);
+                                
                                 $('#used .result').empty();
                                 $('#quals .result [data-qual]').css('color', '');
                                 
