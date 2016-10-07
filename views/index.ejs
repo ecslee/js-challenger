@@ -12,12 +12,12 @@
                 <textarea name="codeentry" rows="10" cols="60"></textarea>
             </div>
         </div>
-        <div id="desired" class="col-sm-6">
-            <h2>Desired functionality</h2>
+        <div id="quals" class="col-sm-6">
+            <h2>Qualifications</h2>
             <div class="result col-xs-12" style="height: 300px; border: 1px red solid;">
-                <% desired.forEach(function (item, i) { %>
-                    <p><%= item %></p>
-                <% }) %>
+                <div class="whitelist"></div>
+                <div class="blacklist"></div>
+                <div class="structure"></div>
             </div>
         </div>
         <% include acorn-result %>

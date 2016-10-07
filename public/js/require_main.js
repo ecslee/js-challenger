@@ -1,40 +1,18 @@
 require.config({
     baseUrl: '.',
     paths: {
-        'tpl': '/tpl',
-        'text': '/js/text',
-        'jquery': '/js/jquery.min',
-        'underscore': '/js/underscore-min',
-        'backbone': '/js/backbone-min',
-        'bootstrap': '/js/bootstrap.min',
-        'models': '/js/models',
-        'views': '/js/views',
-        'collections': '/js/collections'
+        'jquery': '/js/jquery.min'
     },
     shim: {
         'jquery': {
             exports: '$'
-        },
-        'underscore': {
-            exports: '_'
-        },
-        'backbone': {
-            deps: ['jquery', 'underscore'],
-            exports: 'Backbone'
-        },
-        'bootstrap': {
-            deps: ['jquery']
         }
     }
 });
 
 require(
     [
-        'jquery',
-        'underscore',
-        'backbone',
-        'bootstrap',
-        'text'
+        'jquery'
     ],
     function () {
         console.log('ready to go!');
@@ -53,6 +31,54 @@ require(
                                     + '}'
                                  );
                 
+                var quals = {
+                    whitelist: ['ForStatement', 'VariableDeclaration'],
+                    blacklist: ['WhileStatement', 'IfStatement'],
+                    structure: []
+                };
+                
+                function initQualifications() {
+                    // Whitelist
+                    $('#quals .result .whitelist').empty();
+                    $('#quals .result .whitelist').append('<h3>Whitelist</h3>');
+                    for (var w = 0; w < quals.whitelist.length; w++) {
+                        $('#quals .result .whitelist').append('<p data-qual="' + quals.whitelist[w] + '">' + quals.whitelist[w] + '</p>');
+                    }
+
+                    // Blacklist
+                    $('#quals .result .blacklist').empty();
+                    $('#quals .result .blacklist').append('<h3>Blacklist</h3>');
+                    for (var b = 0; b < quals.blacklist.length; b++) {
+                        $('#quals .result .blacklist').append('<p data-qual="' + quals.blacklist[b] + '">' + quals.blacklist[b] + '</p>');
+                    }
+
+                    // Structure
+                    $('#quals .result .structure').empty();
+                    $('#quals .result .structure').append('<h3>Structure</h3>');
+                    for (var s = 0; s < quals.structure.length; s++) {
+                        $('#quals .result .structure').append('<p data-qual="' + quals.structure[s] + '">' + quals.structure[s] + '</p>');
+                    }
+                }
+                initQualifications();
+                
+                var jsNodeSummary;
+                function getJSNodeTypes(node) {
+                    var types = [node.type];
+                    if (jsNodeSummary[node.type] == undefined) {
+                        jsNodeSummary[node.type] = 0;
+                    }
+                    jsNodeSummary[node.type]++;
+
+                    if (node.body && node.body.length) {
+                        node.body.forEach(function (subnode, i) {
+                            types = types.concat(getJSNodeTypes(subnode));
+                        });
+                    } else if (node.body) {
+                        types = types.concat(getJSNodeTypes(node.body));
+                    }
+                    return types;
+                }
+                
                 $('#go-acorn').click(function () {
                     $.ajax({
                         url: '/acorn',
@@ -61,12 +87,25 @@ require(
                         },
                         success: function (data, success, jqxhr) {
                             $('#used .result').empty();
+                            $('#quals .result [data-qual]').css('color', '');
+                            
                             data = JSON.parse(data);
+                            jsNodeSummary = {};
+                            getJSNodeTypes(data.nodes);
+                            
                             if (data.err) {
                                 $('#used .result').html('<div class="alert alert-warning">' + data.err + '</div>');
                             } else {
-                                for (var key in data.nodes) {
-                                    $('#used .result').append('<p>' + key + ' x ' + data.nodes[key] + '</p>');
+                                for (var key in jsNodeSummary) {
+                                    $('#used .result').append('<p>' + key + ' x ' + jsNodeSummary[key] + '</p>');
+                                    
+                                    if (quals.whitelist.indexOf(key) > -1) {
+                                        $('#quals .result .whitelist [data-qual="' + key + '"]').css('color', 'lightgreen');
+                                    }
+                                    
+                                    if (quals.blacklist.indexOf(key) > -1) {
+                                        $('#quals .result .blacklist [data-qual="' + key + '"]').css('color', 'red');
+                                    }
                                 }
                             }
                         },
