@@ -33,7 +33,8 @@ require(
         'jquery',
         'underscore',
         'backbone',
-        'bootstrap'
+        'bootstrap',
+        'text'
     ],
     function () {
         console.log('ready to go!');
@@ -43,17 +44,34 @@ require(
                 
             ],
             function () {
+                $('textarea').val('function abc() {\n'
+                                    + '  var number = 42;\n'
+                                    + '  for (var i = 0; i < 3; i++) {\n'
+                                    + '    number++;\n'
+                                    + '  }\n'
+                                    + '  return number === 45;\n'
+                                    + '}'
+                                 );
+                
                 $('#go-acorn').click(function () {
                     $.ajax({
                         url: '/acorn',
                         data: {
-                            js: encodeURI($('textarea').val())
+                            js: $('textarea').val()
                         },
                         success: function (data, success, jqxhr) {
-                            $('#acorn-result').html(data);
+                            $('#used .result').empty();
+                            data = JSON.parse(data);
+                            if (data.err) {
+                                $('#used .result').html('<div class="alert alert-warning">' + data.err + '</div>');
+                            } else {
+                                for (var key in data.nodes) {
+                                    $('#used .result').append('<p>' + key + ' x ' + data.nodes[key] + '</p>');
+                                }
+                            }
                         },
                         error: function (jqxhr, status, errorMsg) {
-                            $('#acorn-result').html(errorMsg);
+                            $('#used-result').html(errorMsg);
                         }
                     });
                 });

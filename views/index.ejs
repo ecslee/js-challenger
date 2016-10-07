@@ -6,19 +6,21 @@
             <div class="col-sm-4">
                 <h2>Code entry</h2>
                 <p>Enter your code in the text area to the right.</p>
+                <button id="go-acorn" class="btn btn-large btn-danger col-xs-offset-4">Go Acorn</button>
             </div>
             <div class="col-sm-8">
                 <textarea name="codeentry" rows="10" cols="60"></textarea>
             </div>
         </div>
-        <div class="col-sm-6">
-            <button id="go-acorn" class="btn btn-large btn-danger col-xs-offset-4">Go Acorn</button>
-            <div id="acorn-result" class="col-xs-12" style="height: 300px; border: 1px red solid;"></div>
+        <div id="desired" class="col-sm-6">
+            <h2>Desired functionality</h2>
+            <div class="result col-xs-12" style="height: 300px; border: 1px red solid;">
+                <% desired.forEach(function (item, i) { %>
+                    <p><%= item %></p>
+                <% }) %>
+            </div>
         </div>
-        <div class="col-sm-6">
-            <button id="go-esprima" class="btn btn-large btn-primary col-xs-offset-4">Go Esprima</button>
-            <div id="esprima-result" class="col-xs-12" style="height: 300px; border: 1px blue solid;"></div>
-        </div>
+        <% include acorn-result %>
     </div>
 </div>
 <% include footer %>

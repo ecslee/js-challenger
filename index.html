@@ -44,18 +44,42 @@
                 'js/esprima'
             ],
             function (Acorn, Esprima) {
-                var scriptString = 'function abc () {\n'
-                                    + '    var number = 42;\n'
-                                    + '    return number < 45;\n'
+                var scriptString = 'function abc() {\n'
+                                    + '  var number = 42;\n'
+                                    + '  for (var i = 0; i < 3; i++) {\n'
+                                    + '    number++;\n'
+                                    + '  }\n'
+                                    + '  return number === 45;\n'
                                     + '}';
                 $('textarea').val(scriptString);
+                
+                var typeTotal = {};
+                function getTypes(node) {
+                    var types = [node.type];
+                    if (typeTotal[node.type] == undefined) {
+                        typeTotal[node.type] = 0;
+                    }
+                    typeTotal[node.type]++;
+                    
+                    console.log(node, typeof node.body);
+                    if (node.body && node.body.length) {
+                        node.body.forEach(function (subnode, i) {
+                            types = types.concat(getTypes(subnode));
+                        });
+                    } else if (node.body) {
+                        types = types.concat(getTypes(node.body));
+                    }
+                    return types;
+                }
         
                 $('#go-acorn').click(function () {
                     var js = $('textarea').val();
                     var start = Date.now();
-                    var result;
+                    var result, types;
                     try {
-                        result = JSON.stringify(Acorn.parse(js));
+                        result = Acorn.parse(js);
+                        types = getTypes(result);
+                        result =  JSON.stringify(result);
                     } catch (e) {
                         console.log(e.message);
                         result = '<div class="alert alert-warning">' + e.message + '</div>';
@@ -63,6 +87,7 @@
                     var end = Date.now() - start;
                     console.log(end, result);
                     $('#acorn-result').html(result);
+                    $('#esprima-result').html(JSON.stringify(typeTotal));
                 });
                 
                 $('#go-esprima').click(function () {
