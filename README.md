@@ -4,9 +4,11 @@ This project takes code input, parses it, and compares the result to a set of re
 
 ## Running
 
-The parser is served by node.
-In the top level of this project, run `node app` to start the server.
-Then proceed to `localhost:3000` in your browser of choice.
+The parser is served by node.  Here are the steps to run the project:
+0. `cd` to the top level of this project
+1. `npm install` to install dependencies
+2. `node app` to start the server
+3. proceed to `localhost:3000` in your browser of choice
 
 ## Requirements
 
